@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Todo List</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Todo List</h1>
+        <form action="/todo/add" method="post" class="form">
+            <div class="form-group">
+                <input type="text" name="item" required placeholder="Add a new task">
+                <button type="submit">Add</button>
+            </div>
+        </form>
+        <ul class="todo-list">
+            <% todos.forEach((todo, index)=> { %>
+                <li class="<%= todo.completed ? 'completed' : '' %>">
+                    <span>
+                        <%= todo.item %>
+                    </span>
+                    <div class="actions">
+                        <% if (!todo.completed) { %>
+                            <form action="/todo/complete" method="post" class="inline-form">
+                                <input type="hidden" name="index" value="<%= index %>">
+                                <button type="submit">Complete</button>
+                            </form>
+                            <% } %>
+                                <form action="/todo/delete" method="post" class="inline-form">
+                                    <input type="hidden" name="index" value="<%= index %>">
+                                    <button type="submit">Delete</button>
+                                </form>
+                    </div>
+                </li>
+                <% }) %>
+        </ul>
+        <a href="/logout" class="link">Logout</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/todo.js"></script>
+    <% if (hideUrl) { %>
+        <script>
+            if (window.history.pushState) {
+                window.history.pushState(null, null, '/');
+            }
+        </script>
+    <% } %>
+
+</html>
