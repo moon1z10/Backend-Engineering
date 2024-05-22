@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Car Tracker</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script> <!-- Replace to your google maps api key -->
+
+    <script>
+        let map;
+        let marker;
+
+        function initMap() {
+            const initialLocation = { lat: 37.7749, lng: -122.4194 };
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: initialLocation,
+                zoom: 12
+            });
+            marker = new google.maps.Marker({
+                position: initialLocation,
+                map: map,
+                title: 'Car Location'
+            });
+            startSSE();
+        }
+
+        function startSSE() {
+            const eventSource = new EventSource('/events');
+            eventSource.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                const newPosition = new google.maps.LatLng(data.lat, data.lng);
+                marker.setPosition(newPosition);
+                map.panTo(newPosition);
+            };
+
+            eventSource.onerror = function (err) {
+                console.error('EventSource failed:', err);
+            };
+        }
+    </script>
+</head>
+
+<body onload="initMap()">
+    <h1>Real-time Car Tracker</h1>
+    <div id="map" style="height: 500px; width: 100%;"></div>
+</body>
+
+</html>

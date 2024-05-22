@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package calculator;
+
+// Calculator 서비스 정의
+service Calculator {
+  // 두 숫자를 더하는 RPC 메서드
+  rpc Add(AddRequest) returns (AddResponse);
+}
+
+// 요청 메시지 정의
+message AddRequest {
+  int32 num1 = 1;
+  int32 num2 = 2;
+}
+
+// 응답 메시지 정의
+message AddResponse {
+  int32 result = 1;
+}

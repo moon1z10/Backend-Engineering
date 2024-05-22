@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Real-time Stock Price</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #stockPrice {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Real-time Stock Price</h1>
+    <div id="stockPrice">Loading...</div>
+
+    <script>
+        const stockPriceDiv = document.getElementById('stockPrice');
+
+        // SSE 연결 설정
+        const eventSource = new EventSource('/events');
+
+        eventSource.onmessage = function (event) {
+            const stockData = JSON.parse(event.data);
+            stockPriceDiv.textContent = `Current Stock Price: $${stockData.price}`;
+        };
+
+        eventSource.onerror = function (err) {
+            console.error('EventSource failed:', err);
+            stockPriceDiv.textContent = `Server is disconnected`;
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>HTTP/1.1 vs HTTP/3</title>
+</head>
+
+<body>
+    <h1>HTTP/1.1 vs HTTP/3 Speed Test</h1>
+    <div>
+        <button id="http1-btn">Test HTTP/1.1</button>
+        <div id="http1-result"></div>
+    </div>
+    <div>
+        <button id="http3-btn">Test HTTP/3</button>
+        <div id="http3-result"></div>
+    </div>
+    <script>
+        document.getElementById('http1-btn').addEventListener('click', async () => {
+            const response = await fetch('/http1');
+            const text = await response.text();
+            document.getElementById('http1-result').innerText = text;
+        });
+
+        document.getElementById('http3-btn').addEventListener('click', async () => {
+            const response = await fetch('/http3');
+            const text = await response.text();
+            document.getElementById('http3-result').innerText = text;
+        });
+    </script>
+</body>
+
+</html>

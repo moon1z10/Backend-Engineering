@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Long Polling Client</title>
+</head>
+
+<body>
+    <h1>Long Polling Client</h1>
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Enter message">
+    <button onclick="sendMessage()">Send Message</button>
+
+    <script>
+        // 서버로 메시지를 보내는 함수
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
+            if (message) {
+                fetch('/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        console.log(data);
+                        messageInput.value = '';
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // 서버에서 메시지를 폴링하는 함수
+        function pollMessages() {
+            fetch('/poll')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('data : ' + JSON.stringify(data));
+                    if (data.length > 0) {
+                        const messagesDiv = document.getElementById('messages');
+                        data.forEach(msg => {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.textContent = `Received: ${msg.message} at ${msg.timestamp}`;
+                            messagesDiv.appendChild(messageDiv);
+                        });
+                    }
+                    pollMessages(); // 재귀적으로 호출하여 지속적인 폴링
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    setTimeout(pollMessages, 5000); // 에러 발생 시 5초 후 재시도
+                });
+        }
+
+        // 페이지 로드 시 폴링 시작
+        window.onload = pollMessages;
+    </script>
+</body>
+
+</html>

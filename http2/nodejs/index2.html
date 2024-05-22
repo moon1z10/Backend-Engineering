@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>HTTP/1.1 vs HTTP/2</title>
+    <style>
+        #http1,
+        #http2 {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            /* Creates a 5x5 grid layout */
+            grid-gap: 0;
+            /* Removes space between tiles */
+            width: 500px;
+            /* Adjust based on your desired total image size */
+            height: 500px;
+            /* Adjust based on your desired total image size */
+            margin: auto;
+            /* Centers the grid in the page */
+        }
+
+        .tile {
+            width: 100%;
+            /* Each tile takes full width of its grid cell */
+            height: 100%;
+            /* Each tile takes full height of its grid cell */
+            object-fit: cover;
+            /* Ensures the image covers the tile completely */
+            padding: 0;
+            /* Ensures no padding around the images */
+            display: block;
+            /* Removes any extra space around the image within the tile */
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1>HTTP/1.1 vs HTTP/2</h1>
+    <div>
+        <h2>HTTP/1.1</h2>
+        <div id="http1"></div>
+    </div>
+    <div>
+        <h2>HTTP/2</h2>
+        <div id="http2"></div>
+    </div>
+    <script>
+        const tilesX = 5; // 5 columns
+        const tilesY = 5; // 5 rows
+
+        async function fetchTile(protocol, x, y) {
+            const url = `http${protocol === 'http1' ? '' : 's'}://localhost:${protocol === 'http1' ? '3000' : '3001'}/tile?x=${x}&y=${y}`;
+            const response = await fetch(url);
+            const blob = await response.blob();
+            return URL.createObjectURL(blob);
+        }
+
+        async function loadTiles(protocol) {
+            const container = document.getElementById(protocol);
+            const start = performance.now();
+            const tilePromises = [];
+
+            for (let y = 0; y < tilesY; y++) {
+                for (let x = 0; x < tilesX; x++) {
+                    tilePromises.push(fetchTile(protocol, x, y));
+                }
+            }
+
+            const tileURLs = await Promise.all(tilePromises);
+
+            tileURLs.forEach((tileURL, index) => {
+                const img = document.createElement('img');
+                img.classList.add('tile');
+                img.src = tileURL;
+                container.appendChild(img);
+            });
+
+            const end = performance.now();
+            console.log(`${protocol.toUpperCase()} loading time: ${end - start} ms`);
+        }
+
+        loadTiles('http2');
+    </script>
+
+</body>
+
+</html>
